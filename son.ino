@@ -188,7 +188,8 @@ void bleTask() {
 }
 
 void wifiTask() {
-
+    int g=11;
+  while(10<g){
   String receivedData;
   receivedData = read_String(wifiAddr);
 
@@ -246,7 +247,7 @@ void wifiTask() {
 
         yeniZaman = millis();
 
-        if (yeniZaman - eskiZaman > 1000 * 5) {
+        if (yeniZaman - eskiZaman > 1000 * 5*60) {
 
           int x = 0;
 
@@ -255,7 +256,6 @@ void wifiTask() {
           maxthermo.triggerOneShot();
           double pressureSensorValue = 0;
           pressureSensorValue = maxthermo.readThermocoupleTemperature();
-          Serial.print("DEney");
           array[x] = pressureSensorValue;
           int b = z + 1;
           array[b];
@@ -290,7 +290,7 @@ void wifiTask() {
           unsigned long eskiZaman1 = 0;
           unsigned long yeniZaman1;
           yeniZaman1 = millis();
-          if (yeniZaman1 - eskiZaman1 > 1000 * 5) {
+          if (yeniZaman1 - eskiZaman1 > 1000 * 5*60) {
 
             int x = 0;
 
@@ -299,7 +299,6 @@ void wifiTask() {
             maxthermo.triggerOneShot();
             double pressureSensorValue = 0;
             pressureSensorValue = maxthermo.readThermocoupleTemperature();
-            Serial.print("DEney3");
             array[x] = pressureSensorValue;
             int b = z + 1;
             array[b];
@@ -335,7 +334,7 @@ void wifiTask() {
             maxthermo.triggerOneShot();
             double pressureSensorValue = 0;
             pressureSensorValue = maxthermo.readThermocoupleTemperature();
-            Serial.print("DEney3");
+           
             array[x] = pressureSensorValue;
             int b = z + 1;
             array[b];
@@ -396,7 +395,7 @@ void wifiTask() {
       }
     }
   }
-
+  }
 }
 void callback(char * topic, byte * payload, unsigned int length) {
   StaticJsonDocument < 200 > doc;
@@ -424,13 +423,6 @@ void callback(char * topic, byte * payload, unsigned int length) {
 void loop() {
   if (modeIdx == 0) {
     client.loop();
-    StaticJsonDocument < 256 > JSONbuffer;
-    JsonObject veri = JSONbuffer.createNestedObject();
-    tempSensorValue = maxthermo.readThermocoupleTemperature();
-
-    veri["sensorValue"] = tempSensorValue;
-    char JSONmessageBuffer[200];
-    serializeJsonPretty(JSONbuffer, JSONmessageBuffer);
 
   }
 
