@@ -23,7 +23,7 @@
 #include <BLEUtils.h>
 
 #include <BLE2902.h>
-
+#define L  1000
 #define SHOW_TIME_PERIOD 1000
 #define SERVICE_UUID "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
@@ -188,13 +188,14 @@ void bleTask() {
 }
 
 void wifiTask() {
-    int g=11;
-    int b=0;
-     int z = 1;
-      int array[1];
-      
-    int i;
- // while(10<g){
+  int g=0;
+while (g<11)
+{
+
+   int veriler[L];
+   int index=1;
+   int verifyt=0;
+     int pressureSensorValue = 0;
   String receivedData;
   receivedData = read_String(wifiAddr);
 
@@ -238,34 +239,44 @@ void wifiTask() {
       WiFi.begin(wifiName.c_str(), wifiPassword.c_str());
 
       Serial.print("Connecting to Wifi");
-     int c=0;
+      for(int i=0;i<L;i++){
+     veriler[i]=999;
+   }
       while (WiFi.status() != WL_CONNECTED) {
-
+  
         unsigned long eskiZaman = 0;
         unsigned long yeniZaman;
-Serial.print("aaaaa");
-        Serial.print(".");
-        delay(300);
-        int adress = 400;
-Serial.print(c);
+
+ delay(300);
         yeniZaman = millis();
-
-//        if (yeniZaman - eskiZaman > 1000 ) {
+   
+       if (yeniZaman - eskiZaman > 1000 ) {
 
          
-         
+         delay(50);
           maxthermo.triggerOneShot();
-          int pressureSensorValue = 0;
+        
           pressureSensorValue = maxthermo.readThermocoupleTemperature();
-          array[c] = pressureSensorValue;
-          Serial.println(array[c]);
-          Serial.println(sizeof(array));
-          i = 0;
-          c=c+1;
-          delay(500);
+          index=index+1;
+          veriler[index]=pressureSensorValue;
+          
+          Serial.println("index");
+          Serial.println(index);
+          Serial.println("veriler");
 
-        //  eskiZaman = yeniZaman;
-        //}
+          Serial.println(veriler[index]);
+          Serial.println("sensor");
+          Serial.println(pressureSensorValue);
+          if (index==99)
+          {
+           
+           index=0;
+          }
+          
+
+      
+      eskiZaman = yeniZaman;
+      }
 
       }
 
@@ -289,25 +300,33 @@ Serial.print(c);
           unsigned long eskiZaman1 = 0;
           unsigned long yeniZaman1;
           yeniZaman1 = millis();
-          if (yeniZaman1 - eskiZaman1 > 1000 * 5) {
+       if (yeniZaman1 - eskiZaman1 > 1000 ) {
 
-            int x = 0;
+         
+         delay(50);
+          maxthermo.triggerOneShot();
+        
+          pressureSensorValue = maxthermo.readThermocoupleTemperature();
+          index=index+1;
+          veriler[index]=pressureSensorValue;
+          
+          Serial.println("index");
+          Serial.println(index);
+          Serial.println("veriler");
 
-            x++;
-            delay(1000);
-            maxthermo.triggerOneShot();
-            int pressureSensorValue = 0;
-            pressureSensorValue = maxthermo.readThermocoupleTemperature();
-            array[x] = pressureSensorValue;
-            b = z + 1;
-            array[b];
-             i = 0;
-            if (x == 4000) {
-              x = 0;
-            }
-
-            eskiZaman1 = yeniZaman1;
+          Serial.println(veriler[index]);
+          Serial.println("sensor");
+          Serial.println(pressureSensorValue);
+          if (index==99)
+          {
+           
+           index=0;
           }
+          
+
+      
+      eskiZaman1 = yeniZaman1;
+      }
         }
 
         unsigned long previousMillis = 0;
@@ -324,30 +343,38 @@ Serial.print(c);
           unsigned long eskiZaman2 = 0;
           unsigned long yeniZaman2;
           yeniZaman2 = millis();
-          if (yeniZaman2 - eskiZaman2 > 1000 * 5) {
+       if (yeniZaman2 - eskiZaman2 > 1000 ) {
 
-            int x = 0;
+         
+         delay(50);
+          maxthermo.triggerOneShot();
+        
+          pressureSensorValue = maxthermo.readThermocoupleTemperature();
+          index=index+1;
+          veriler[index]=pressureSensorValue;
+          
+          Serial.println("index");
+          Serial.println(index);
+          Serial.println("veriler");
 
-            x++;
-            delay(1000);
-            maxthermo.triggerOneShot();
-            int pressureSensorValue = 0;
-            pressureSensorValue = maxthermo.readThermocoupleTemperature();
-            i = 0;
-            array[x] = pressureSensorValue;
-            b = z + 1;
-            array[b];
-             
-            if (x == 4000) {
-              x = 0;
-            }
-
-            eskiZaman2 = yeniZaman2;
+          Serial.println(veriler[index]);
+          Serial.println("sensor");
+          Serial.println(pressureSensorValue);
+          if (index==99)
+          {
+           
+           index=0;
           }
+          
+
+      
+      eskiZaman2 = yeniZaman2;
+      }
         }
 
       }
 
+  index=0;
       while (client.connected()) {
 
         delay(1000);
@@ -367,26 +394,32 @@ Serial.print(c);
 
         veri["sensorValue"] = tempSensorValue;
         
-Serial.println(sizeof(array));
+/* Serial.println(sizeof(array)); */
 Serial.println(tempSensorValue);
 
-          while ( i < sizeof(array)) {
+          
+            while(verifyt==0){
+             index=index+1;
+       
+             if(veriler[index]!=999){
+             
             delay(500);
-            veri["sensorValue"] = array[i];
+            veri["sensorValue"] = veriler[index];
             char JSONmessageBuffer[200];
             serializeJsonPretty(JSONbuffer, JSONmessageBuffer);
             if (client.publish(topic, JSONmessageBuffer) == true) {
               Serial.println("Success sending message");
-              Serial.println("deneme");
+              Serial.println(index);
             } else {
               Serial.println("Error sending message");
             }
             
             client.subscribe(topic);
-         i++;
-          }
-
-
+        
+             }
+             verifyt=1;
+            }
+          
         serializeJsonPretty(JSONbuffer, JSONmessageBuffer);
         if (client.publish(topic, JSONmessageBuffer) == true) {
           Serial.println("Success sending message");
@@ -400,7 +433,7 @@ Serial.println(tempSensorValue);
 
     }
   }
- // }
+ }
 }
 void callback(char * topic, byte * payload, unsigned int length) {
   StaticJsonDocument < 200 > doc;
