@@ -231,7 +231,7 @@ while (g<11)
 
     strcpy(topic, topic1.c_str());
     ///////////
-        int n4 = clintid1.length();
+        int n4 = clientid1.length();
 
     char clientid[n4 + 1];
 
