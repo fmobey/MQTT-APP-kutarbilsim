@@ -194,7 +194,7 @@ while (g<11)
 
    int veriler[L];
    int index=1;
-   int verifyt=0;
+   
      int pressureSensorValue = 0;
   String receivedData;
   receivedData = read_String(wifiAddr);
@@ -206,6 +206,7 @@ while (g<11)
     String mqttusername1 = getValue(receivedData, ',', 3);
     String mqttpassword1 = getValue(receivedData, ',', 4);
     String topic1 = getValue(receivedData, ',', 5);
+    String clientid1 = getValue(receivedData, ',', 6);
     const int mqtt_port = 1883;
 
     int n = mqttbroker1.length();
@@ -229,6 +230,13 @@ while (g<11)
     char topic[n3 + 1];
 
     strcpy(topic, topic1.c_str());
+    ///////////
+        int n4 = clintid1.length();
+
+    char clientid[n4 + 1];
+
+    strcpy(clientid, clientid1.c_str());
+    //////////
 
     if (wifiName.length() > 0 && wifiPassword.length() > 0) {
       Serial.print("WifiName : ");
@@ -287,7 +295,7 @@ while (g<11)
       client.setServer(mqtt_broker, mqtt_port);
       client.setCallback(callback);
       while (!client.connected()) {
-       const char* client_id = "fmo";
+       const char* client_id = clientid;
         
         Serial.printf("The client %s connects to the public mqtt broker\n", client_id);
         if (client.connect(client_id, mqtt_username, mqtt_password)) {
@@ -373,7 +381,7 @@ while (g<11)
         }
 
       }
-
+bool verify=true;
   index=0;
       while (client.connected()) {
 
@@ -397,10 +405,9 @@ while (g<11)
 /* Serial.println(sizeof(array)); */
 Serial.println(tempSensorValue);
 
-          
-            while(verifyt==0){
+             while(verify==true){
              index=index+1;
-       
+            
              if(veriler[index]!=999){
              
             delay(500);
@@ -417,8 +424,10 @@ Serial.println(tempSensorValue);
             client.subscribe(topic);
         
              }
-             verifyt=1;
+            else {
+             verify=false;
             }
+            } 
           
         serializeJsonPretty(JSONbuffer, JSONmessageBuffer);
         if (client.publish(topic, JSONmessageBuffer) == true) {
