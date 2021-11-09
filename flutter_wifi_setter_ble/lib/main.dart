@@ -179,13 +179,14 @@ class _WifiSetterState extends State<WifiSetter> {
 
   submitAction() {
     var wifiData =
-        '${wifiNameController.text},${wifiPasswordController.text},${mqttbroker.text},${mqttusername.text},${mqttpassword.text},${topicc.text}';
+        '${wifiNameController.text},${wifiPasswordController.text},${mqttbroker.text},${mqttusername.text},${mqttpassword.text},${topicc.text}${clientid.text}';
     writeData(wifiData);
   }
 
   TextEditingController wifiNameController = TextEditingController();
   TextEditingController wifiPasswordController = TextEditingController();
   TextEditingController mqttbroker = TextEditingController();
+  TextEditingController clientid = TextEditingController();
   TextEditingController mqttusername = TextEditingController();
   TextEditingController mqttpassword = TextEditingController();
   TextEditingController topicc = TextEditingController();
@@ -333,7 +334,8 @@ class _WifiSetterState extends State<WifiSetter> {
                       padding: const EdgeInsets.all(16),
                       child: TextField(
                         controller: mqttbroker,
-                        decoration: InputDecoration(labelText: 'MQTT Broker'),
+                        decoration:
+                            InputDecoration(labelText: 'MQTT Broker İP Adress'),
                       ),
                     ),
                     Padding(
@@ -347,6 +349,13 @@ class _WifiSetterState extends State<WifiSetter> {
                       padding: const EdgeInsets.all(16),
                       child: TextField(
                         controller: mqttpassword,
+                        decoration: InputDecoration(labelText: 'MQTT Password'),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: TextField(
+                        controller: clientid,
                         decoration: InputDecoration(labelText: 'MQTT Password'),
                       ),
                     ),
