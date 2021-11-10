@@ -179,7 +179,7 @@ class _WifiSetterState extends State<WifiSetter> {
 
   submitAction() {
     var wifiData =
-        '${wifiNameController.text},${wifiPasswordController.text},${mqttbroker.text},${mqttusername.text},${mqttpassword.text},${topicc.text}${clientid.text}';
+        '${wifiNameController.text},${wifiPasswordController.text},${mqttbroker.text},${mqttusername.text},${mqttpassword.text},${topicc.text},${clientid.text}';
     writeData(wifiData);
   }
 
@@ -356,7 +356,8 @@ class _WifiSetterState extends State<WifiSetter> {
                       padding: const EdgeInsets.all(16),
                       child: TextField(
                         controller: clientid,
-                        decoration: InputDecoration(labelText: 'MQTT Password'),
+                        decoration:
+                            InputDecoration(labelText: 'MQTT Client ID'),
                       ),
                     ),
                     Padding(
