@@ -189,9 +189,10 @@ void bleTask() {
 
 void wifiTask() {
   int g=0;
+  
 while (g<11)
 {
-
+int verify=0;
    int veriler[L];
    int index=1;
    
@@ -251,17 +252,17 @@ while (g<11)
      veriler[i]=999;
    }
       while (WiFi.status() != WL_CONNECTED) {
-  
+  verify=0;
         unsigned long eskiZaman = 0;
         unsigned long yeniZaman;
 
  delay(300);
         yeniZaman = millis();
    
-       if (yeniZaman - eskiZaman > 1000 ) {
+       if (yeniZaman - eskiZaman > 1000*5*60 ) {
 
          
-         delay(50);
+         delay(1000*5*60);
           maxthermo.triggerOneShot();
         
           pressureSensorValue = maxthermo.readThermocoupleTemperature();
@@ -275,7 +276,7 @@ while (g<11)
           Serial.println(veriler[index]);
           Serial.println("sensor");
           Serial.println(pressureSensorValue);
-          if (index==99)
+          if (index==L)
           {
            
            index=0;
@@ -296,7 +297,7 @@ while (g<11)
       client.setCallback(callback);
       while (!client.connected()) {
        const char* client_id = clientid;
-        
+        verify=0;
         Serial.printf("The client %s connects to the public mqtt broker\n", client_id);
         if (client.connect(client_id, mqtt_username, mqtt_password)) {
 
@@ -308,10 +309,10 @@ while (g<11)
           unsigned long eskiZaman1 = 0;
           unsigned long yeniZaman1;
           yeniZaman1 = millis();
-       if (yeniZaman1 - eskiZaman1 > 1000 ) {
+       if (yeniZaman1 - eskiZaman1 > 1000*5*60 ) {
 
          
-         delay(50);
+         delay(1000*5*60);
           maxthermo.triggerOneShot();
         
           pressureSensorValue = maxthermo.readThermocoupleTemperature();
@@ -325,7 +326,7 @@ while (g<11)
           Serial.println(veriler[index]);
           Serial.println("sensor");
           Serial.println(pressureSensorValue);
-          if (index==99)
+          if (index==L)
           {
            
            index=0;
@@ -351,10 +352,10 @@ while (g<11)
           unsigned long eskiZaman2 = 0;
           unsigned long yeniZaman2;
           yeniZaman2 = millis();
-       if (yeniZaman2 - eskiZaman2 > 1000 ) {
+       if (yeniZaman2 - eskiZaman2 > 1000*5*60 ) {
 
          
-         delay(50);
+         delay(1000*5*60);
           maxthermo.triggerOneShot();
         
           pressureSensorValue = maxthermo.readThermocoupleTemperature();
@@ -368,7 +369,7 @@ while (g<11)
           Serial.println(veriler[index]);
           Serial.println("sensor");
           Serial.println(pressureSensorValue);
-          if (index==99)
+          if (index==L)
           {
            
            index=0;
@@ -381,7 +382,7 @@ while (g<11)
         }
 
       }
-bool verify=true;
+verify=0;
   index=0;
       while (client.connected()) {
 
@@ -401,22 +402,32 @@ bool verify=true;
         char JSONmessageBuffer[200];
 
         veri["sensorValue"] = tempSensorValue;
+        int dogru=0;
+        if(verify==0){
+        for(int i=0;i<L;i++){
+          
+           if(veriler[i]!=999){
+             
+           dogru=dogru+1;
         
-/* Serial.println(sizeof(array)); */
-Serial.println(tempSensorValue);
-
-             while(verify==true){
-             index=index+1;
+             }
+        }
+}
+            Serial.println(tempSensorValue);
+             if(verify==0){
+             for(int j=0;j<dogru;j++){
+             
             
-             if(veriler[index]!=999){
+             if(veriler[j]!=999){
              
             delay(500);
-            veri["sensorValue"] = veriler[index];
+            veri["sensorValue"] = veriler[j];
             char JSONmessageBuffer[200];
             serializeJsonPretty(JSONbuffer, JSONmessageBuffer);
             if (client.publish(topic, JSONmessageBuffer) == true) {
               Serial.println("Success sending message");
-              Serial.println(index);
+              Serial.println("verileri hafızadan yollama");
+              Serial.println(j);
             } else {
               Serial.println("Error sending message");
             }
@@ -425,10 +436,10 @@ Serial.println(tempSensorValue);
         
              }
             else {
-             verify=false;
+             verify=1;
             }
             } 
-          
+             }
         serializeJsonPretty(JSONbuffer, JSONmessageBuffer);
         if (client.publish(topic, JSONmessageBuffer) == true) {
           Serial.println("Success sending message");
