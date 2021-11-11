@@ -1,3 +1,7 @@
+/*
+Autour: Furkan Metin OĞUZ
+Date:2021
+*/
 #include <ESPNtpClient.h>
 
 #include "EEPROM.h"
@@ -23,7 +27,8 @@
 #include <BLEUtils.h>
 
 #include <BLE2902.h>
-#define L  1000
+
+#define L  2016
 #define SHOW_TIME_PERIOD 1000
 #define SERVICE_UUID "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
@@ -139,12 +144,12 @@ void setup() {
   EEPROM.commit();
 
   if (modeIdx != 0) {
-    //BLE MODE
+
     digitalWrite(ledPin, true);
     Serial.println("BLE MODE");
     bleTask();
   } else {
-    //WIFI MODE
+
     digitalWrite(ledPin, false);
     Serial.println("WIFI MODE");
     wifiTask();
@@ -153,16 +158,15 @@ void setup() {
 }
 
 void bleTask() {
-  // Create the BLE Device
-  BLEDevice::init("ESP32");
 
-  // Create the BLE Server
+  BLEDevice::init("Microzerr");
+
+
   pServer = BLEDevice::createServer();
   pServer -> setCallbacks(new MyServerCallbacks());
-  // Create the BLE Service
+
   BLEService * pService = pServer -> createService(SERVICE_UUID);
 
-  // Create a BLE Characteristic
   pCharacteristic = pService -> createCharacteristic(
     CHARACTERISTIC_UUID,
     BLECharacteristic::PROPERTY_READ |
@@ -175,14 +179,12 @@ void bleTask() {
 
   pCharacteristic -> addDescriptor(new BLE2902());
 
-  // Start the service
   pService -> start();
 
-  // Start advertising
   BLEAdvertising * pAdvertising = BLEDevice::getAdvertising();
   pAdvertising -> addServiceUUID(SERVICE_UUID);
   pAdvertising -> setScanResponse(false);
-  pAdvertising -> setMinPreferred(0x0); // set value to 0x00 to not advertise this parameter
+  pAdvertising -> setMinPreferred(0x0); 
   BLEDevice::startAdvertising();
   Serial.println("Waiting a client connection to notify...");
 }
@@ -193,7 +195,7 @@ void wifiTask() {
 while (g<11)
 {
 int verify=0;
-   int veriler[L];
+   uint16_t  veriler[L];
    int index=1;
    
      int pressureSensorValue = 0;
@@ -231,13 +233,13 @@ int verify=0;
     char topic[n3 + 1];
 
     strcpy(topic, topic1.c_str());
-    ///////////
+ 
         int n4 = clientid1.length();
 
     char clientid[n4 + 1];
 
     strcpy(clientid, clientid1.c_str());
-    //////////
+
 
     if (wifiName.length() > 0 && wifiPassword.length() > 0) {
       Serial.print("WifiName : ");
@@ -249,7 +251,7 @@ int verify=0;
 
       Serial.print("Connecting to Wifi");
       for(int i=0;i<L;i++){
-     veriler[i]=999;
+     veriler[i]=250;
    }
       while (WiFi.status() != WL_CONNECTED) {
   verify=0;
@@ -268,14 +270,9 @@ int verify=0;
           pressureSensorValue = maxthermo.readThermocoupleTemperature();
           index=index+1;
           veriler[index]=pressureSensorValue;
-          
-          Serial.println("index");
+//verileri yedekleme
           Serial.println(index);
-          Serial.println("veriler");
-
-          Serial.println(veriler[index]);
-          Serial.println("sensor");
-          Serial.println(pressureSensorValue);
+ 
           if (index==L)
           {
            
@@ -318,14 +315,9 @@ int verify=0;
           pressureSensorValue = maxthermo.readThermocoupleTemperature();
           index=index+1;
           veriler[index]=pressureSensorValue;
-          
-          Serial.println("index");
+//verileri yedekleme
           Serial.println(index);
-          Serial.println("veriler");
 
-          Serial.println(veriler[index]);
-          Serial.println("sensor");
-          Serial.println(pressureSensorValue);
           if (index==L)
           {
            
@@ -341,7 +333,7 @@ int verify=0;
         unsigned long previousMillis = 0;
         unsigned long interval = 5000;
         unsigned long currentMillis = millis();
-        // if WiFi is down, try reconnecting
+
         if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >= interval)) {
           Serial.print(millis());
           Serial.println("Reconnecting to WiFi...");
@@ -362,13 +354,9 @@ int verify=0;
           index=index+1;
           veriler[index]=pressureSensorValue;
           
-          Serial.println("index");
-          Serial.println(index);
-          Serial.println("veriler");
 
-          Serial.println(veriler[index]);
-          Serial.println("sensor");
-          Serial.println(pressureSensorValue);
+          Serial.println(index);
+
           if (index==L)
           {
            
@@ -406,7 +394,7 @@ verify=0;
         if(verify==0){
         for(int i=0;i<L;i++){
           
-           if(veriler[i]!=999){
+           if(veriler[i]!=250){
              
            dogru=dogru+1;
         
@@ -418,15 +406,14 @@ verify=0;
              for(int j=0;j<dogru;j++){
              
             
-             if(veriler[j]!=999){
-             
-            delay(500);
-            veri["sensorValue"] = veriler[j];
+             if(veriler[j]!=250){
+             //kaydedilen verileri yollama
+            delay(250);
+            veri["memoryData"] = veriler[j];
             char JSONmessageBuffer[200];
             serializeJsonPretty(JSONbuffer, JSONmessageBuffer);
             if (client.publish(topic, JSONmessageBuffer) == true) {
               Serial.println("Success sending message");
-              Serial.println("verileri hafızadan yollama");
               Serial.println(j);
             } else {
               Serial.println("Error sending message");
