@@ -309,7 +309,7 @@ int verify=0;
        if (yeniZaman1 - eskiZaman1 > 1000*5*60 ) {
 
          
-         delay(1000*5*60);
+          delay(1000*5*60);
           maxthermo.triggerOneShot();
         
           pressureSensorValue = maxthermo.readThermocoupleTemperature();
@@ -432,7 +432,9 @@ verify=0;
           Serial.println("Success sending message");
         } else {
           Serial.println("Error sending message");
+
         }
+
 
         client.subscribe(topic);
         delay(1000);
